@@ -1,0 +1,29 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.8
+    commands:
+      - echo "Installing Terraform"
+      - curl -o terraform.zip https://releases.hashicorp.com/terraform/0.15.0/terraform_0.15.0_linux_amd64.zip
+      - unzip terraform.zip
+      - mv terraform /usr/local/bin/
+      - terraform --version
+
+  pre_build:
+    commands:
+      - echo "Setting up environment"
+      - cd terraform
+      - terraform init
+
+  build:
+    commands:
+      - echo "Running Terraform modules"
+      - terraform get -update
+      - terraform plan
+
+artifacts:
+  files:
+    - terraform/terraform.tfstate
+    - terraform/terraform.tfstate.backup
