@@ -1,0 +1,22 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo "Installing Docker"
+      - curl -fsSL https://get.docker.com -o get-docker.sh
+      - sh get-docker.sh
+
+  build:
+    commands:
+      - echo "Building Docker image"
+      - cd app
+      - docker build -t my-app .
+      - echo "Tagging Docker image"
+      - docker tag my-app:latest $ECR_REPOSITORY_URI:latest
+
+  post_build:
+    commands:
+      - echo "Pushing Docker image to ECR"
+      - $(aws ecr get-login --no-include-email --region $AWS_REGION)
+      - docker push $ECR_REPOSITORY_URI:latest
